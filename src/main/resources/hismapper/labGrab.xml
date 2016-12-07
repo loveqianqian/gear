@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ *
+  ~  *****************************************************************************
+  ~  * Copyright ( c ) 2016 Heren Tianjin Inc. All Rights Reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of Heren Tianjin Inc
+  ~  * ("Confidential Information").  You shall not disclose such Confidential Information
+  ~  *  and shall use it only in accordance with the terms of the license agreement
+  ~  *  you entered into with Heren Tianjin or a Heren Tianjin authorized
+  ~  *  reseller (the "License Agreement").
+  ~  ****************************************************************************
+  ~  *
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heren.turtle.gear.dao.his.LabGrabDao">
+
+    <resultMap id="labResultMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="spcm_sample_date_time" property="spcmSampleDateTime"/>
+        <result column="spcm_received_date_time" property="spcmReceivedDateTime"/>
+        <result column="requested_date_time" property="requestedDateTime"/>
+        <result column="execute_date" property="executeDate"/>
+        <result column="visit_id" property="visitId"/>
+        <result column="test_no" property="testNo"/>
+        <result column="item_no" property="itemNo"/>
+        <result column="print_order" property="printOrder"/>
+        <result column="report_item_name" property="checkItemName"/>
+        <result column="report_item_code" property="checkItemCode"/>
+        <result column="result" property="result"/>
+        <result column="units" property="units"/>
+        <result column="abnormal_indicator" property="abnormalIndicator"/>
+        <result column="result_date_time" property="resultDateTime"/>
+        <result column="ref_range" property="refRange"/>
+        <result column="lower_limit" property="lowerLimit"/>
+        <result column="upper_limit" property="upperLimit"/>
+        <result column="check_name" property="checkName"/>
+    </resultMap>
+
+    <select id="loadLabResults" parameterType="java.util.Map" resultMap="labResultMap">
+        SELECT
+        b.patient_id,
+        b.visit_id,
+        b.spcm_sample_date_time,
+        b.spcm_received_date_time,
+        b.requested_date_time,
+        b.execute_date,
+        a.test_no,
+        a.item_no,
+        a.print_order,
+        a.report_item_name,
+        a.report_item_code,
+        a.result,
+        a.units,
+        a.abnormal_indicator,
+        a.result_date_time,
+        a.ref_range,
+        a.lower_limit,
+        a.upper_limit,
+        li.item_name check_name
+        FROM lab_test_items li,lab_result a LEFT JOIN lab_test_master b ON a.test_no = b.test_no
+        <where>
+            and li.test_no=a.test_no
+            <if test="patientId!=null">
+                and b.patient_id=#{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="visitId!=null">
+                and b.visit_id = #{visitId,jdbcType=NUMERIC}
+            </if>
+            <if test="testNo!=null">
+                and a.test_no = #{testNo,jdbcType=VARCHAR}
+            </if>
+            <if test="clinicVisitId!=null">
+                and b.clinic_visit_id= #{clinicVisitId,jdbcType=VARCHAR}
+                and b.visit_id='0'
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ *
+  ~  *****************************************************************************
+  ~  * Copyright ( c ) 2016 Heren Tianjin Inc. All Rights Reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of Heren Tianjin Inc
+  ~  * ("Confidential Information").  You shall not disclose such Confidential Information
+  ~  *  and shall use it only in accordance with the terms of the license agreement
+  ~  *  you entered into with Heren Tianjin or a Heren Tianjin authorized
+  ~  *  reseller (the "License Agreement").
+  ~  ****************************************************************************
+  ~  *
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heren.turtle.gear.dao.his.ExamGrabDao">
+
+    <resultMap id="examMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="visit_id" property="visitId"/>
+        <result column="exam_date_time" property="examDateTime"/>
+        <result column="impression" property="impression"/>
+        <result column="description" property="description"/>
+        <result column="url" property="url"/>
+        <result column="exam_class" property="examClass"/>
+    </resultMap>
+
+    <select id="loadExamResults" parameterType="java.util.Map" resultMap="examMap">
+        SELECT
+        b.patient_id,
+        b.visit_id,
+        to_char(b.exam_date_time,'yyyyMMddhh24miss') as exam_date_time,
+        a.impression,
+        a.description,
+        a.url,
+        b.exam_class
+        FROM exam_report a LEFT JOIN exam_master b ON a.exam_no = b.exam_no
+        <where>
+            and b.exam_class in ('心功能','超声')
+            and b.exam_sub_class in ('心脏')
+            <if test="patientId!=null">
+                and b.patient_id=#{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="visitId!=null">
+                and b.visit_id = #{visitId,jdbcType=VARCHAR}
+            </if>
+            <if test="clinicVisitId!=null">
+                and b.clinic_visit_id = #{clinicVisitId,jdbcType=VARCHAR}
+            </if>
+            <if test="examNo!=null">
+                and a.exam_no=#{examNo,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+</mapper>

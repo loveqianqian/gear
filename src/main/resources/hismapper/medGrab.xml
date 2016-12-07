@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ *
+  ~  *****************************************************************************
+  ~  * Copyright ( c ) 2016 Heren Tianjin Inc. All Rights Reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of Heren Tianjin Inc
+  ~  * ("Confidential Information").  You shall not disclose such Confidential Information
+  ~  *  and shall use it only in accordance with the terms of the license agreement
+  ~  *  you entered into with Heren Tianjin or a Heren Tianjin authorized
+  ~  *  reseller (the "License Agreement").
+  ~  ****************************************************************************
+  ~  *
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heren.turtle.gear.dao.his.MedGrabDao">
+
+    <resultMap id="clinicMedicineRecordMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="visit_id" property="visitId"/>
+        <result column="drug_code" property="drugCode"/>
+        <result column="drug_name" property="drugName"/>
+        <result column="firm_id" property="firmId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="package_spec" property="packageSpec"/>
+        <result column="administration" property="administration"/>
+        <result column="frequency" property="frequency"/>
+        <result column="drug_spec" property="drugSpec"/>
+        <result column="drug_form" property="drugForm"/>
+    </resultMap>
+    <select id="loadClinicMedicineRecords" parameterType="java.util.Map" resultMap="clinicMedicineRecordMap">
+        SELECT
+        b.patient_id,
+        b.visit_id,
+        a.drug_code,
+        a.drug_name,
+        a.firm_id,
+        a.quantity,
+        a.package_spec,
+        a.administration,
+        a.frequency,
+        c.drug_spec,
+        c.drug_form
+        FROM DRUG_PRESC_DETAIL a LEFT JOIN DRUG_PRESC_master b ON a.presc_no = b.presc_no
+        LEFT JOIN drug_dict c ON a.drug_code = c.drug_code
+        <where>
+            <if test="patientId!=null">
+                and b.patient_id=#{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="visitId!=null">
+                and b.clinic_visit_id = #{visitId,jdbcType=NUMERIC}
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="medicineRecordMap" type="java.util.Map">
+        <result column="order_class" property="orderClass"/>
+        <result column="patient_id" property="patientId"/>
+        <result column="visit_id" property="visitId"/>
+        <result column="order_code" property="orderCode"/>
+        <result column="order_text" property="orderText"/>
+        <result column="dosage" property="dosage"/>
+        <result column="dosage_units" property="dosageUnits"/>
+        <result column="administration" property="administration"/>
+        <result column="start_date_time" property="startDateTime"/>
+        <result column="stop_date_time" property="stopDateTime"/>
+        <result column="frequency" property="frequency"/>
+        <result column="billing_attr" property="billingAttr"/>
+        <result column="repeat_indicator" property="repeatIndicator"/>
+        <result column="drug_name" property="drugName"/>
+        <result column="drug_spec" property="drugSpec"/>
+        <result column="units" property="units"/>
+        <result column="drug_form" property="drugForm"/>
+        <result column="toxi_property" property="toxiProperty"/>
+        <result column="dose_per_unit" property="dosePerUnit"/>
+        <result column="dose_units" property="doseUnits"/>
+        <result column="drug_indicator" property="drugIndicator"/>
+    </resultMap>
+
+    <select id="loadMedicineRecords" parameterType="java.util.Map" resultMap="medicineRecordMap">
+        SELECT
+        a.order_class,
+        a.patient_id,
+        a.visit_id,
+        a.order_code,
+        a.order_text,
+        a.dosage,
+        a.dosage_units,
+        a.administration,
+        to_char(a.start_date_time,'yyyyMMddhh24miss') as start_date_time,
+        to_char(a.stop_date_time,'yyyyMMddhh24miss') as stop_date_time,
+        a.frequency,
+        a.billing_attr,
+        a.repeat_indicator,
+        b.drug_name,
+        b.drug_spec,
+        b.units,
+        b.drug_form,
+        b.toxi_property,
+        b.dose_per_unit,
+        b.dose_units,
+        b.drug_indicator
+        FROM orders a LEFT JOIN drug_dict b ON a.order_code = b.drug_code
+        <where>
+            and a.order_class='A'
+            <if test="patientId!=null">
+                and a.patient_id = #{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="visit_id!=null">
+                and a.visit_id = #{visitId,jdbcType=NUMERIC}
+            </if>
+        </where>
+    </select>
+
+</mapper>

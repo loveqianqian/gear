@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ *
+  ~  *****************************************************************************
+  ~  * Copyright ( c ) 2016 Heren Tianjin Inc. All Rights Reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of Heren Tianjin Inc
+  ~  * ("Confidential Information").  You shall not disclose such Confidential Information
+  ~  *  and shall use it only in accordance with the terms of the license agreement
+  ~  *  you entered into with Heren Tianjin or a Heren Tianjin authorized
+  ~  *  reseller (the "License Agreement").
+  ~  ****************************************************************************
+  ~  *
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heren.turtle.gear.dao.emr.EmrGrabDao">
+
+    <select id="getEmrByKey" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '主诉内容')       AS zsnr,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '现病史内容')      AS xbsnr,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '既往病史')       AS jwbs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '传染病史')       AS crbs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '外伤史')        AS wks,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '手术史')        AS sss,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '药物过敏史')      AS ywgms,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '预防接种史')      AS yfjzs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '疫区居住史')      AS yqjzs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '疫水、疫源接触史')   AS ysyyjcs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '毒品接触史')      AS dpjcs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '放射物、毒物接触史')  AS fswdwjcs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '吸烟史')        AS xys,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '饮酒史')        AS yjs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '月经史')        AS yjs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '无痛经')        AS wtj,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '经期规则否')      AS jqglf,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '婚否')         AS hf,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '配偶体质')       AS potz,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '是否生育')       AS sfsy,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '家族传染病及遗传病史') AS jzcrbjycbs,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '父母健在否')      AS fmjzf,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '心率值')        AS xlz,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '体温值')        AS twz,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '脉搏值')        AS mbz,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '呼吸值')        AS hxz,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '收缩压值')       AS ssyz,
+            GetElementText(#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=VARCHAR}, '舒张压值')       AS szyz
+        FROM dual
+    </select>
+</mapper>

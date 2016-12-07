@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ *
+  ~  *****************************************************************************
+  ~  * Copyright ( c ) 2016 Heren Tianjin Inc. All Rights Reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of Heren Tianjin Inc
+  ~  * ("Confidential Information").  You shall not disclose such Confidential Information
+  ~  *  and shall use it only in accordance with the terms of the license agreement
+  ~  *  you entered into with Heren Tianjin or a Heren Tianjin authorized
+  ~  *  reseller (the "License Agreement").
+  ~  ****************************************************************************
+  ~  *
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heren.turtle.gear.dao.his.HisGrabDao">
+
+    <resultMap id="patientInfoMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="name_phonetic" property="namePhonetic"/>
+        <result column="date_of_birth" property="dateOfBirth"/>
+        <result column="nation" property="nation"/>
+        <result column="id_no" property="idNo"/>
+        <result column="charge_type" property="chargeType"/>
+        <result column="mailing_address" property="mailingAddress"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="phone_number_home" property="phoneNumberHome"/>
+        <result column="relationship" property="relationship"/>
+        <result column="next_of_kin_zip_code" property="contactZipCode"/>
+        <result column="next_of_kin" property="contactPerson"/>
+        <result column="relationship" property="relationship"/>
+        <result column="next_of_kin_addr" property="contactAddress"/>
+        <result column="next_of_kin_phone" property="contactPhone"/>
+        <result column="insur_no" property="insurNo"/>
+        <result column="insur_type" property="insurType"/>
+        <result column="marital_status" property="maritalStatus"/>
+        <result column="working_status" property="workingStatus"/>
+        <result column="occupation" property="occupation"/>
+        <result column="service_agency" property="service_agency"/>
+    </resultMap>
+
+    <select id="loadPatientInfo" parameterType="java.util.Map" resultMap="patientInfoMap">
+        SELECT
+            a.patient_id,
+            a.name,
+            a.sex,
+            a.name_phonetic,
+            to_char(a.date_of_birth, 'yyyyMMddhh24miss') AS date_of_birth,
+            a.nation,
+            a.id_no,
+            a.charge_type,
+            a.mailing_address,
+            a.zip_code,
+            a.phone_number_home,
+            a.next_of_kin,
+            a.relationship,
+            a.next_of_kin_addr,
+            a.next_of_kin_zip_code,
+            a.next_of_kin_phone,
+            a.insur_no,
+            a.insur_type,
+            b.marital_status,
+            b.working_status,
+            b.occupation,
+            b.service_agency
+        FROM pat_master_index a
+            LEFT JOIN pat_visit b ON a.patient_id = b.patient_id
+        WHERE a.patient_id = #{patientId,jdbcType=VARCHAR}
+    </select>
+
+    <resultMap id="inHosMap" type="java.util.Map">
+        <result property="patientId" column="patient_id"/>
+        <result property="visitId" column="visit_id"/>
+        <result property="wardCode" column="ward_code"/>
+        <result property="deptCode" column="dept_code"/>
+        <result property="bedNo" column="bed_no"/>
+        <result property="admissionDateTime" column="admission_date_time"/>
+        <result property="admWardDate_time" column="adm_ward_date_time"/>
+        <result property="diagnosis" column="diagnosis"/>
+        <result property="patientCondition" column="patient_condition"/>
+        <result property="nursingClass" column="nursing_class"/>
+        <result property="doctorInCharge" column="doctor_in_charge"/>
+        <result property="totalCosts" column="total_costs"/>
+    </resultMap>
+
+    <select id="loadInHosPatient" parameterType="java.util.Map" resultMap="inHosMap">
+        SELECT
+        patient_id,
+        visit_id,
+        ward_code,
+        dept_code,
+        bed_no,
+        admission_date_time,
+        adm_ward_date_time,
+        DIAGNOSIS,
+        PATIENT_CONDITION,
+        NURSING_CLASS,
+        DOCTOR_IN_CHARGE,
+        TOTAL_COSTS
+        FROM pats_in_hospital
+        <where>
+            <if test="wardCode!=null">
+                and ward_code = #{wardCode,jdbcType=VARCHAR}
+            </if>
+            <if test="deptCode!=null">
+                and dept_code = #{deptCode,jdbcType=VARCHAR}
+            </if>
+            <if test="patientId!=null">
+                and patient_id = #{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="admissionDateTimeBegin!=null">
+                and admission_date_time >= to_date(#{admissionDateTimeBegin,jdbcType=VARCHAR},"yyyy-MM-dd
+                hh24:mi:ss")
+            </if>
+            <if test="admissionDateTimeEnd!=null">
+                <![CDATA[and admission_date_time <= to_date(#{admissionDateTimeEnd,jdbcType=VARCHAR},"yyyy-MM-dd hh24:mi:ss")]]>
+            </if>
+            <if test="admWardDateTimeBegin!=null">
+                and adm_ward_date_time >= to_date(#{admWardDateTimeBegin,jdbcType=VARCHAR},"yyyy-MM-dd hh24:mi:ss")
+            </if>
+            <if test="admWardDateTimeEnd!=null">
+                <![CDATA[and adm_ward_date_time <= to_date(#{admWardDateTimeEnd,jdbcType=VARCHAR},"yyyy-MM-dd hh24:mi:ss")]]>
+            </if>
+        </where>
+    </select>
+
+
+    <resultMap id="patVisitMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="visit_id" property="visitId"/>
+        <result column="dept_admission_to" property="deptAdmissionTo"/>
+        <result column="dept_admission_to_name" property="deptAdmissionToName"/>
+        <result column="bed_no" property="bedNo"/>
+        <result column="admission_date_time" property="admissionDateTime"/>
+        <result column="dept_discharge_from" property="deptDischargeFrom"/>
+        <result column="discharge_date_time" property="dischargeDateTime"/>
+        <result column="occupation" property="occupation"/>
+        <result column="marital_status" property="maritalStatus"/>
+        <result column="charge_type" property="chargeType"/>
+        <result column="working_status" property="workingStatus"/>
+        <result column="service_agency" property="serviceAgency"/>
+        <result column="mailing_address" property="mailingAddress"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="next_of_kin" property="contactPerson"/>
+        <result column="relationship" property="relationship"/>
+        <result column="next_of_kin_addr" property="contactAddress"/>
+        <result column="next_of_kin_phone" property="contactPhone"/>
+        <result column="patient_class" property="patientClass"/>
+        <result column="admission_cause" property="admissionCause"/>
+        <result column="consulting_date" property="consultingDate"/>
+        <result column="pat_adm_condition" property="patAdmCondition"/>
+        <result column="consulting_doctor" property="consultingDoctor"/>
+        <result column="total_costs" property="totalCosts"/>
+        <result column="attending_doctor" property="attendingDoctor"/>
+        <result column="doctor_in_charge" property="doctorInCharge"/>
+        <result column="discharge_disposition" property="dischargeDisposition"/>
+    </resultMap>
+
+    <select id="loadPatVisitRecords" parameterType="java.util.Map" resultMap="patVisitMap">
+        SELECT
+        a.patient_id,
+        a.visit_id,
+        a.dept_admission_to,
+        a.admission_date_time,
+        b.bed_no,
+        a.dept_discharge_from,
+        a.discharge_date_time,
+        a.occupation,
+        a.marital_status,
+        a.charge_type,
+        a.working_status,
+        a.service_agency,
+        a.mailing_address,
+        a.zip_code,
+        a.next_of_kin,
+        a.relationship,
+        a.next_of_kin_addr,
+        a.next_of_kin_phone,
+        a.patient_class,
+        a.admission_cause,
+        a.consulting_date,
+        a.pat_adm_condition,
+        a.consulting_doctor,
+        a.total_costs,
+        a.attending_doctor,
+        a.doctor_in_charge,
+        a.discharge_disposition
+        FROM pat_visit a LEFT JOIN pats_in_hospital b ON a.patient_id = b.patient_id
+        <where>
+            <if test="patientId!=null">
+                and patient_id = #{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="visitId!=null">
+                and visit_id = #{visitId,jdbcType=NUMERIC}
+            </if>
+            <if test="deptAdmissionTo!=null">
+                and dept_admission_to = #{deptAdmissionTo,jdbcType=VARCHAR}
+            </if>
+            <if test="chargeType!=null">
+                and charge_type = #{chargeType,jdbcType=VARCHAR}
+            </if>
+            <if test="admissionDateTimeBegin!=null">
+                and admission_date_time >= to_date(#{admissionDateTimeBegin,jdbcType=VARCHAR})
+            </if>
+            <if test="admissionDateTimeEnd!=null">
+                <![CDATA[ and admission_date_time <= to_date(#{admissionDateTimeEnd,jdbcType=VARCHAR}) ]]>
+            </if>
+        </where>
+    </select>
+
+
+    <resultMap id="patientDiagnosisMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="visit_id" property="visitId"/>
+        <result column="diagnosis_type" property="diagnosisType"/>
+        <result column="diagnosis_type_name" property="diagnosisTypeName"/>
+        <result column="diagnosis_no" property="diagnosisNo"/>
+        <result column="diagnosis_desc" property="diagnosisDesc"/>
+        <result column="diagnosis_date" property="diagnosisDate"/>
+    </resultMap>
+
+    <select id="loadPatientDiagnosis" parameterType="java.util.Map" resultMap="patientDiagnosisMap">
+        select
+        a.patient_id,
+        a.visit_id,
+        a.diagnosis_type,
+        b.diagnosis_type_name,
+        a.diagnosis_no,
+        a.diagnosis_desc,
+        a.diagnosis_date
+        from diagnosis a left join diagnosis_type_dict b on a.diagnosis_type = b.diagnosis_type_code
+        <where>
+            and a.diagnosis_type='3'
+            <if test="patientId!=null">
+                and a.patient_Id = #{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="visitId!=null">
+                and a.visit_id = #{visitId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="clinicPatientMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="visit_no" property="visitNo"/>
+        <result column="visit_date" property="visitDate"/>
+        <result column="serial_no" property="serialNo"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="doctor" property="doctor"/>
+        <result column="id_no" property="idNo"/>
+        <result column="date_of_birth" property="dateOfBirth"/>
+        <result column="phone_number_home" property="phoneNumberHome"/>
+        <result column="clinic_visit_id" property="clinicVisitId"/>
+        <result column="temp_date" property="tempDate"/>
+    </resultMap>
+
+    <select id="loadClinicPatients" parameterType="java.util.Map" resultMap="clinicPatientMap">
+        SELECT
+        a.patient_id,
+        a.visit_no,
+        a.visit_date,
+        a.serial_no,
+        a.visit_dept,
+        a.name,
+        a.sex,
+        a.doctor,
+        b.id_no,
+        to_char(b.date_of_birth,'yyyyMMddhh24miss') as date_of_birth,
+        b.phone_number_home,
+        to_char(a.visit_date,'yyyyMMdd') as temp_date
+        FROM clinic_master a LEFT JOIN pat_master_index b ON a.patient_id = b.patient_id
+        <where>
+            <if test="patientId!=null">
+                and a.patient_id=#{patientId,jdbcType=VARCHAR}
+            </if>
+            <if test="visitId!=null">
+                and a.visit_id =#{visitId,jdbcType=VARCHAR}
+            </if>
+            <if test="visitDept!=null">
+                and a.visit_dept = #{visitDept,jdbcType=VARCHAR}
+            </if>
+            <if test="visitDateBegin!=null">
+                and a.visit_date >= to_date(#{visitDateBegin,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="visitDateEnd!=null">
+                <![CDATA[and a.visit_date <= to_date(#{visitDateEnd,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')]]>
+            </if>
+            and a.REGISTRATION_STATUS='2'
+        </where>
+    </select>
+
+    <select id="loadClinicVisitId" parameterType="java.util.Map" resultMap="clinicPatientMap">
+        select
+        cd.clinic_visit_id,
+        cd.patient_id,
+        to_char(cd.visit_date,'yyyyMMdd') as temp_date
+        from clinic_mr_detail cd
+        <where>
+            <if test="visitDateBegin!=null">
+                and cd.visit_date >= to_date(#{visitDateBegin,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="visitDateEnd!=null">
+                <![CDATA[and cd.visit_date <= to_date(#{visitDateEnd,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')]]>
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="InHosOutPatMap" type="java.util.Map">
+        <result column="patient_id" property="patientId"/>
+        <result column="visit_id" property="visitId"/>
+        <result column="admission_number" property="admissionNumber"/>
+        <result column="bedNumber" property="bedNumber"/>
+        <result column="ATTENDING_DOCTOR" property="attendingDoctor"/>
+        <result column="ADMISSION_DATE_TIME" property="admissionDateTime"/>
+        <result column="DISCHARGE_DATE_TIME" property="dischargeDateTime"/>
+        <result column="TOTAL_COSTS" property="totalCosts"/>
+        <result column="DEPT_DISCHARGE_FROM" property="deptDischargeFrom"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="ward_code" property="wardCode"/>
+        <result column="ward_name" property="wardName"/>
+    </resultMap>
+
+    <select id="loadInPatOut" parameterType="java.util.Map" resultMap="InHosOutPatMap">
+        SELECT
+        a.patient_id,
+        a.visit_id,
+        a.patient_id||'_'||a.visit_id as admission_number,
+        '' as bedNumber,
+        a.ATTENDING_DOCTOR,
+        to_char(a.ADMISSION_DATE_TIME,'yyyyMMddhh24miss') as ADMISSION_DATE_TIME,
+        to_char(a.DISCHARGE_DATE_TIME,'yyyyMMddhh24miss') as DISCHARGE_DATE_TIME,
+        a.TOTAL_COSTS,
+        a.DEPT_DISCHARGE_FROM,
+        dd.dept_name,
+        dvw.ward_code,
+        (select d.dept_name from dept_dict d where d.dept_code=dvw.ward_code) as ward_name
+        FROM pat_visit a,dept_dict dd,dept_vs_ward dvw
+        <where>
+            and a.DEPT_DISCHARGE_FROM=dd.dept_code
+            and dd.dept_name like '%心内%'
+            and dvw.dept_code = dd.dept_code
+            <if test="startTime!=null">
+                and a.DISCHARGE_DATE_TIME >= to_date(#{startTime,jdbcType=VARCHAR},'yyyyMMddhh24miss')
+            </if>
+            <if test="endTime!=null">
+                <![CDATA[and a.DISCHARGE_DATE_TIME <= to_date(#{endTime,jdbcType=VARCHAR},'yyyyMMddhh24miss')]]>
+            </if>
+        </where>
+    </select>
+
+</mapper>
